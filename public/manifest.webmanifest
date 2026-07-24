@@ -1,0 +1,27 @@
+{
+  "name": "Aurora — цели, заметки, прогресс",
+  "short_name": "Aurora",
+  "description": "Премиальное личное пространство для целей, заметок и привычек. Работает офлайн.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
+  "lang": "ru",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
