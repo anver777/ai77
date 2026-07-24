@@ -50,54 +50,80 @@ export const Button = ({
 export const Sheet = ({
   open, onClose, title, children, full,
 }: { open: boolean; onClose: () => void; title?: string; children: ReactNode; full?: boolean }) => {
+  // Блокировка скролла body: используем fixed position, чтобы избежать скачков на iOS
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
+    const prevPosition = document.body.style.position;
+    const prevWidth = document.body.style.width;
+    const prevTop = document.body.style.top;
+    const scrollY = window.scrollY;
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+    document.body.style.top = `-${scrollY}px`;
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      document.body.style.position = prevPosition;
+      document.body.style.width = prevWidth;
+      document.body.style.top = prevTop;
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          {/* Задник */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          {/* Оболочка: анимируется только position, не скроллится */}
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 320 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.4 }}
-            onDragEnd={(_, info) => info.offset.y > 120 && onClose()}
             className={cn(
-              "glass-strong relative w-full max-w-lg rounded-t-[32px] px-5 pb-8 pt-3 safe-b",
+              "glass-strong relative flex w-full max-w-lg flex-col rounded-t-[32px]",
               full ? "h-[92vh]" : "max-h-[88vh]",
-              "overflow-y-auto no-scrollbar",
             )}
           >
-            <div className="sticky top-0 z-10 -mx-5 mb-2 px-5 pb-3 pt-1 backdrop-blur-xl">
-              <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-white/25" />
-              {title && (
+            {/* Ручка свайпа — drag только на этом элементе */}
+            <motion.div
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.4 }}
+              onDragEnd={(_, info) => info.offset.y > 120 && onClose()}
+              className="shrink-0 cursor-grab active:cursor-grabbing touch-none px-5 pb-1 pt-3"
+            >
+              <div className="mx-auto h-1.5 w-12 rounded-full bg-white/25" />
+            </motion.div>
+
+            {/* Заголовок — фиксирован */}
+            {title && (
+              <div className="shrink-0 px-5 pb-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold">{title}</h3>
                   <button onClick={onClose} className="rounded-full p-2 text-dim hover:text-[var(--text-1)]">
                     <X size={18} />
                   </button>
                 </div>
-              )}
+              </div>
+            )}
+
+            {/* Скроллируемое тело */}
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-8 safe-b no-scrollbar">
+              {children}
             </div>
-            {children}
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

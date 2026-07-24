@@ -165,7 +165,7 @@ export const GoalEditor = ({ open, onClose, goal, defaultVault = false, defaultD
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2 pb-2 pt-2">
           {goal && (
             <Button
               variant="danger"
@@ -177,7 +177,7 @@ export const GoalEditor = ({ open, onClose, goal, defaultVault = false, defaultD
               <Trash2 size={16} /> Удалить
             </Button>
           )}
-          <Button onClick={save} className="flex-1">
+          <Button onClick={save} className="flex-1" type="button">
             {goal ? "Сохранить" : "Создать цель"}
           </Button>
         </div>

@@ -151,9 +151,10 @@ html.light .divide-white\/5 > * + * {
   }
   .no-scrollbar {
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
   .safe-b {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 12px);
   }
   .safe-t {
     padding-top: env(safe-area-inset-top, 0px);
